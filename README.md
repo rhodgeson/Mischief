@@ -7,8 +7,11 @@ All Scripts, Scenes, and Prefabs listed are ones that I have mostly or completel
 Some detailed implementation information:
 
 Player: Player is created as a Prefab titled Player
+
 Movement: PlayerMovement.cs script attached to player manages player movement.
+
 Animation: Currently there are animations created for FlyLeft, FlyRight, IdleLeft, and IdleRight. The only animations visible to the user at IdleLeft and IdleRight which flip back and forth as the player moves.
+
 Abilities: Player's fire ability and eat ability are managed in script PlayerBehaviors.cs. If the player object is colliding with a villager and one of the abilities is called, it calls another method within the villager it is colliding with in order to trigger the reaction of the villager object to the ability.
 
 
