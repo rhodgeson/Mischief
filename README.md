@@ -1,6 +1,6 @@
 # Mischief
 
-2D platformer video game in progress for Video Game Design class. I am acting as project lead, delegating tasks, managing productivity, and planning gameplay and mechanics according to timeline. I take no credit for any of the art - all were sourced from third parties, but the animations were created by me in unity.
+2D platformer video game in progress for Video Game Design class. I acted as project lead, delegating tasks, managing productivity, and planning gameplay and mechanics according to timeline. I take no credit for any of the art - all were sourced from third parties, but the animations were created by me in unity using those premade assets.
 
 All Scripts, Scenes, and Prefabs listed are ones that I have mostly or completely worked on myself.
 
