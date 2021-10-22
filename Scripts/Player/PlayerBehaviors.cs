@@ -18,35 +18,63 @@ public class PlayerBehaviors : MonoBehaviour
 
     public HungerBar_Script hungerBar;
     public HungerBar_Script karmaBar;
-
+    ScoreManager scoreMan;
 
     private int lives;
+    int curKarmaInt;
 
     DialogueStorage ds;
     public PlayerMovement pm;
     public Animator anim;
     private GameObject[] villager;
     private float posDifference, posDifferenceY;
+    //public float delay;
     private bool vfacingRight;
     public string villagerTouchName = "";
+    public string currentLevel;
+    LifeManager lifem;
+    //public Exclamation_Script Exclamation;
+    private bool invisible;
+    private PowerUp pow;
+
     void Start()
     {
-        //Set bars to max
-        curHunger = 50f;
+        //Set bars to half
+        curHunger = 75f;
         curKarma = 50f;
 
         hungerBar.SetMaxHunger(maxHunger);
-        karmaBar.SetMaxHunger(maxKarma);
+        if (karmaBar != null)
+            karmaBar.SetMaxHunger(maxKarma);
         ds = gameObject.GetComponent<DialogueStorage>();
+        lifem = FindObjectOfType<LifeManager>();
+        scoreMan = FindObjectOfType<ScoreManager>();
+
+        PlayerPrefs.SetString("curLevel", SceneManager.GetActiveScene().name);
+        currentLevel = PlayerPrefs.GetString("curLevel");
+
+
+        PlayerPrefs.SetInt("playerCurScore", 0);
+        pow = gameObject.GetComponent<PowerUp>();
     }
 
     void Update()
     {
-        karmaBar.SetHunger(curKarma);
+        if (pow.invisible)
+        {
+            invisible = true;
+        }
+        else if (!pow.invisible)
+        {
+            invisible = false;
+        }
+
+        if (karmaBar != null)
+            karmaBar.SetHunger(curKarma);
         // Hunger decreases with time as long as curHunger >= 0. Rate of decrease can be changed.
         if (curHunger > 0)
         {
-            curHunger -= .7f * Time.deltaTime;
+            curHunger -= 1.5f * Time.deltaTime;
             hungerBar.SetHunger(curHunger);
         }
 
@@ -62,74 +90,123 @@ public class PlayerBehaviors : MonoBehaviour
 
     public void eat()
     {
-        //play eat animation
-
+        gameObject.GetComponent<PlayerSoundManager>().eatSound.Play();
         //add to hunger
         if (curHunger <= 100f)
         {
-            curHunger += 20;
+            curHunger += 10;
             if (curHunger > 100f)
                 curHunger = 100;
             hungerBar.SetHunger(curHunger);
 
         }
-
-        //if another villager is looking, lose karma
-        villager = GameObject.FindGameObjectsWithTag("Villager");
-
-        foreach (GameObject v in villager)
+        if (!invisible)
         {
-            vfacingRight = v.GetComponent<VillagerMovement>() != null ? v.GetComponent<VillagerMovement>().facingRight : v.GetComponent<VillagerController>().facingRight;
-            posDifference = v.transform.position.x - gameObject.transform.position.x;
-            posDifferenceY = v.transform.position.y - gameObject.transform.position.y;
-            if (!villagerTouchName.Equals(v.name))
-            {
-                if ((posDifference < 2.2 && posDifference > 0 && !vfacingRight) || (posDifference < 0 && posDifference > -2.2 && vfacingRight))
-                {
-                    if (posDifferenceY < 1 && posDifferenceY > -1)
-                    {
+            //if another villager is looking, lose karma
+            villager = GameObject.FindGameObjectsWithTag("Villager");
 
-                        Debug.Log("CAUGHT");
-                        Debug.Log(v.gameObject.name);
-                        //caught sound
-                        changeKarma(-15);
+            foreach (GameObject v in villager)
+            {
+                vfacingRight = v.GetComponent<VillagerMovement>() != null ? v.GetComponent<VillagerMovement>().facingRight : v.GetComponent<VillagerController>().facingRight;
+                posDifference = v.transform.position.x - gameObject.transform.position.x;
+                posDifferenceY = v.transform.position.y - gameObject.transform.position.y;
+                if (!villagerTouchName.Equals(v.name))
+                {
+                    if ((posDifference < 2.2 && posDifference > 0 && !vfacingRight) || (posDifference < 0 && posDifference > -2.2 && vfacingRight))
+                    {
+                        if (posDifferenceY < 1 && posDifferenceY > -1)
+                        {
+                            v.GetComponent<Exclamation_Script>().ShowAndHide();
+                            changeKarma(-15);
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 
     public void fire()
     {
         //plays fire animation
+        if (!invisible)
+        {
+            //if another villager is looking, lose karma
+            villager = GameObject.FindGameObjectsWithTag("Villager");
 
+            foreach (GameObject v in villager)
+            {
+                vfacingRight = v.GetComponent<VillagerMovement>() != null ? v.GetComponent<VillagerMovement>().facingRight : v.GetComponent<VillagerController>().facingRight;
+                posDifference = v.transform.position.x - gameObject.transform.position.x;
+                posDifferenceY = v.transform.position.y - gameObject.transform.position.y;
+                if (!villagerTouchName.Equals(v.name))
+                {
+                    if ((posDifference < 2.2 && posDifference > 0 && !vfacingRight) || (posDifference < 0 && posDifference > -2.2 && vfacingRight))
+                    {
+                        if (posDifferenceY < 1 && posDifferenceY > -1)
+                        {
+                            v.GetComponent<Exclamation_Script>().ShowAndHide();
+                            changeKarma(-15);
+                        }
+                    }
+                }
+
+            }
+        }
     }
+
 
     public void death(string deathType)
     {
-        //restart level immediately
-        if (deathType.Equals("karma"))
+        gameObject.GetComponent<PlayerSoundManager>().deathSound.Play();
+        //restart level 
+        if (deathType.Equals("fall"))
         {
-            ds.callDialogue("KarmaDeath", false);
+            endDeathAnim();
         }
-        else if (deathType.Equals("hunger"))
+        else
         {
-            ds.callDialogue("HungerDeath", false);
+
+            //calls death animation which then calls endDeathAnim()
+            if (pm.facingRight)
+            {
+                anim.SetTrigger("DieRight");
+            }
+            else
+            {
+                anim.SetTrigger("DieLeft");
+            }
         }
+    }
+
+    public void endDeathAnim()
+    {
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
+        lifem.lifeChange(-1);
     }
+
 
     //increase or decrease karma
     public void changeKarma(int value)
     {
         if (curKarma < 100f)
         {
+            if (value > 0)
+            {
+                GameObject.Find("Player").GetComponent<PlayerSoundManager>().positiveSound.Play();
+            }
+            else
+            {
+                GameObject.Find("Player").GetComponent<PlayerSoundManager>().negativeSound.Play();
+            }
             curKarma += value;
             if (curKarma > 100f)
                 curKarma = 100;
             karmaBar.SetHunger(curKarma);
+            //curKarmaInt = (int) curKarma;
+
+            scoreMan.updateScore(value * 3);
         }
 
     }

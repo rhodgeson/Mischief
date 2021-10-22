@@ -34,11 +34,12 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.F))
         {
             //player uses fire attack on villager
-            pb.fire(); //plays fire animation, DOESNT add to hunger bar
             pm.fireAnim();
             if (touchingVillager)
             {
                 villager.fired(); //villager dies
+                pb.fire(); //plays fire animation, DOESNT add to hunger bar
+
             }
             else if (touchingDestructable)
             {
@@ -52,29 +53,6 @@ public class PlayerController : MonoBehaviour
             pb.death("fall");
         }
 
-        // if (touchingVillager)
-        // {
-        //     if (Input.GetKeyDown(KeyCode.E))
-        //     {
-        //         //player eats villager
-        //         pb.eat(); //plays eat animation, adds to hunger bar
-        //         villager.eaten(); //villager is eaten
-        //     }
-        //     else if (Input.GetKeyDown(KeyCode.F))
-        //     {
-        //         //player uses fire attack on villager
-        //         pb.fire(); //plays fire animation, DOESNT add to hunger bar
-        //         villager.fired(); //villager dies
-        //     }
-        // }
-        // if (touchingDestructable)
-        // {
-        //     if (Input.GetKeyDown(KeyCode.F))
-        //     {
-        //         pb.fire();
-        //         destructable.fired();
-        //     }
-        // }
     }
 
     void OnTriggerEnter2D(Collider2D col)

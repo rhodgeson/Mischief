@@ -72,9 +72,7 @@ public class PlayerMovement : MonoBehaviour
             facingRight = false;
             if (isPushing())
             {
-                anim.SetTrigger("ScratchLeft");
                 moveVelocity = -speed * .5f;
-                Debug.Log("is pushing");
             }
             else
             {
