@@ -10,7 +10,9 @@ public class VillagerMovement : MonoBehaviour
 
     public bool facingRight;
     private float lastPoint;
+    SpriteRenderer spr;
 
+    private bool sprFaceRight;
     void Start()
     {
         leftPoint = transform.position.x;
@@ -18,6 +20,11 @@ public class VillagerMovement : MonoBehaviour
         Debug.Log(leftPoint);
         Debug.Log(rightPoint);
         lastPoint = transform.position.x;
+        spr = gameObject.GetComponent<SpriteRenderer>();
+        if (facingRight)
+        {
+            sprFaceRight = spr.flipX;
+        }
     }
 
     void Update()
@@ -27,23 +34,14 @@ public class VillagerMovement : MonoBehaviour
         if (transform.position.x > lastPoint)
         {
             facingRight = true;
+            spr.flipX = sprFaceRight;
         }
         else
         {
             facingRight = false;
+            spr.flipX = (!sprFaceRight);
         }
         lastPoint = transform.position.x;
-        Debug.Log(facingRight);
-        // if (Mathf.Round(transform.position.x * 100.0f) * 0.01f == rightPoint)
-        // {
-        //     facingRight = false;
-        //     Debug.Log("left");
-        // }
-        // else if (Mathf.Round(transform.position.x * 100.0f) * 0.01f == leftPoint)
-        // {
-        //     facingRight = true;
-        //     Debug.Log("right");
-        // }
     }
 
 
