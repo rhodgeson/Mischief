@@ -18,7 +18,8 @@ public class MainQuestManager : MonoBehaviour
     void Start()
     {
       score = GameObject.Find("Score");
-      scoreMan = score.GetComponent<ScoreManager>();
+      if(score != null)
+        scoreMan = score.GetComponent<ScoreManager>();
     }
 
 
