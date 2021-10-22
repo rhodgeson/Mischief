@@ -7,7 +7,6 @@ public class AppleAnimator : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Sprite[] idle;
     public Sprite[] vanish;
-    //public AudioSource audioSource;
 
     void Start()
     {
@@ -54,7 +53,7 @@ public class AppleAnimator : MonoBehaviour
         if (col.gameObject.tag == "Player")
         {
             //GetComponent<CircleCollider2D>().enabled = false;
-            //audioSource.Play(0);
+            col.gameObject.GetComponent<PlayerSoundManager>().collectSound.Play();
             StopAllCoroutines();
             StartCoroutine(Vanish());
         }
